@@ -70,8 +70,10 @@ async def check_sub_callback(callback: CallbackQuery):
 async def participate(callback: CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
     await state.set_state(PhotoState.waiting_for_photo)
-    await callback.message.edit_text("📸 Чтобы участвовать в батле, отправьте свою фотографию:", reply_markup=None)
+    # Редактируем сообщение с меню, превращая его в просьбу с кнопкой «Назад»
+    await callback.message.edit_text("📸 *Чтобы участвовать в батле, отправьте свою фотографию:*", parse_mode="Markdown", reply_markup=kb.back_button())
     user_last_msg[user_id] = callback.message.message_id
+    await callback.answer()
 
 # Приём фото
 @router.message(PhotoState.waiting_for_photo, F.photo)
@@ -81,6 +83,7 @@ async def receive_photo(message: Message, state: FSMContext):
     await db.add_photo(user_id, file_id)
     await state.clear()
     await message.answer("✅ Фото сохранено! Спасибо.")
+    await message.answer("✨ *Меню* ✨", reply_markup=kb.main_menu(), parse_mode="Markdown")
     await delete_previous_message(user_id, message.chat.id)
 
 # Как выиграть
