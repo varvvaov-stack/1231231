@@ -1,3 +1,3 @@
-TOKEN = "8706747678:AAH88e8WR-MkyChKLoZwVEwQu6Jvo5WkMQI"   # твой токен
+TOKEN = "8631920472:AAH-g62R96z8JjBrRI7ea-OizxePXkvhSxk"   # твой токен
 CHANNEL_ID = "@dfsfdsfs432234"                             # твой канал
 ADMIN_IDS = [7847231769]                                   # твой Telegram ID
