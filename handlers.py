@@ -36,7 +36,6 @@ async def delete_previous_message(user_id: int, chat_id: int):
             await bot.delete_message(chat_id, user_last_msg[user_id])
         except:
             pass
-
 async def send_message_and_track(user_id: int, chat_id: int, text: str, reply_markup=None, parse_mode=None):
     await delete_previous_message(user_id, chat_id)
     msg = await bot.send_message(chat_id, text, reply_markup=reply_markup, parse_mode=parse_mode)
