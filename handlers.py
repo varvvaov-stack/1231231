@@ -112,8 +112,8 @@ async def how_to_win(callback: CallbackQuery):
 @router.callback_query(F.data == "help")
 async def help_request(callback: CallbackQuery, state: FSMContext):
     await state.set_state(HelpAnswerState.waiting_for_answer)
-    await callback.message.edit_text("✍️ *Опишите вашу проблему:*", parse_mode="Markdown", reply_markup=None)
-    user_last_msg[callback.from_user.id] = callback.message.message_id
+    await callback.message.answer("✍️ *Опишите вашу проблему:*", parse_mode="Markdown", reply_markup=kb.back_button())
+    await callback.answer()
 
 @router.message(HelpAnswerState.waiting_for_answer)
 async def receive_help_text(message: Message, state: FSMContext):
@@ -122,6 +122,8 @@ async def receive_help_text(message: Message, state: FSMContext):
     await db.add_help_request(user_id, text)
     await state.clear()
     await message.answer("✅ Ваше обращение отправлено администратору. Ожидайте ответа.")
+    await message.answer("✨ *Меню* ✨", reply_markup=kb.main_menu(), parse_mode="Markdown")
+    # Удаляем предыдущее сообщение с просьбой, если нужно
     await delete_previous_message(user_id, message.chat.id)
 
 # Профиль
@@ -142,9 +144,10 @@ async def show_profile(callback: CallbackQuery):
 ⏰ Дата регистрации в боте: {profile['date_registration'][:10]}
 💬 Кол-во обращений: {profile['help_count']}
 """
-        await send_message_and_track(user_id, callback.message.chat.id, text, parse_mode="Markdown")
+        await callback.message.answer(text, parse_mode="Markdown", reply_markup=kb.back_button())
     else:
         await callback.answer("Профиль не найден", show_alert=True)
+    await callback.answer()
 
 # Админ панель
 @router.message(Command("admin"))
