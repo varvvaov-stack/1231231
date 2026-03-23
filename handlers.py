@@ -60,7 +60,7 @@ async def cmd_start(message: Message):
 async def check_sub_callback(callback: CallbackQuery):
     user_id = callback.from_user.id
     if await check_subscription(bot, user_id):
-        await callback.message.edit_text("✅ Подписка подтверждена!\n\nНажмите /start, чтобы продолжить.", parse_mode="Markdown")
+        await callback.message.edit_text("✅ Подписка подтверждена!\nНажмите /start, чтобы продолжить.", parse_mode="Markdown")
         await callback.answer()
     else:
         await callback.answer("❌ Вы не подписались на канал!", show_alert=True)
