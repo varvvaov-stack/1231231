@@ -36,6 +36,7 @@ async def delete_previous_message(user_id: int, chat_id: int):
             await bot.delete_message(chat_id, user_last_msg[user_id])
         except:
             pass
+
 async def send_message_and_track(user_id: int, chat_id: int, text: str, reply_markup=None, parse_mode=None):
     await delete_previous_message(user_id, chat_id)
     msg = await bot.send_message(chat_id, text, reply_markup=reply_markup, parse_mode=parse_mode)
@@ -50,16 +51,16 @@ async def cmd_start(message: Message):
     first_name = message.from_user.first_name
     await db.add_user(user_id, username, first_name)
     if await check_subscription(bot, user_id):
-        await send_message_and_track(user_id, message.chat.id, "✨ *Меню* ✨", reply_markup=kb.main_menu(), parse_mode="Markdown")
+        await send_message_and_track(user_id, message.chat.id, "✨ Меню ✨", reply_markup=kb.main_menu())
     else:
-        await send_message_and_track(user_id, message.chat.id, "🔒 *Чтобы продолжить, подпишитесь на канал:*", reply_markup=kb.subscribe_keyboard(), parse_mode="Markdown")
+        await send_message_and_track(user_id, message.chat.id, "🔒 Чтобы продолжить, подпишитесь на канал:", reply_markup=kb.subscribe_keyboard())
 
 # Проверка подписки
 @router.callback_query(F.data == "check_sub")
 async def check_sub_callback(callback: CallbackQuery):
     user_id = callback.from_user.id
     if await check_subscription(bot, user_id):
-        await callback.message.edit_text("✅ Подписка подтверждена!\nНажмите /start, чтобы продолжить.", parse_mode="Markdown")
+        await callback.message.edit_text("✅ Подписка подтверждена!\nНажмите /start, чтобы продолжить.")
         await callback.answer()
     else:
         await callback.answer("❌ Вы не подписались на канал!", show_alert=True)
@@ -69,8 +70,7 @@ async def check_sub_callback(callback: CallbackQuery):
 async def participate(callback: CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
     await state.set_state(PhotoState.waiting_for_photo)
-    # Редактируем сообщение с меню, превращая его в просьбу с кнопкой «Назад»
-    await callback.message.edit_text("📸 *Чтобы участвовать в батле, отправьте свою фотографию:*", parse_mode="Markdown", reply_markup=kb.back_button())
+    await callback.message.edit_text("📸 Чтобы участвовать в батле, отправьте свою фотографию:", reply_markup=kb.back_button())
     user_last_msg[user_id] = callback.message.message_id
     await callback.answer()
 
@@ -82,39 +82,39 @@ async def receive_photo(message: Message, state: FSMContext):
     await db.add_photo(user_id, file_id)
     await state.clear()
     await message.answer("✅ Фото сохранено! Спасибо.")
-    await message.answer("✨ *Меню* ✨", reply_markup=kb.main_menu(), parse_mode="Markdown")
+    await message.answer("✨ Меню ✨", reply_markup=kb.main_menu())
     await delete_previous_message(user_id, message.chat.id)
 
 # Как выиграть
 @router.callback_query(F.data == "how_to_win")
 async def how_to_win(callback: CallbackQuery):
     text = """
-🏆 *КАК ПОБЕДИТЬ В БАТЛЕ*
+🏆 КАК ПОБЕДИТЬ В БАТЛЕ
 
-1️⃣ *Продвигайте свой юзернейм*
+1️⃣ Продвигайте свой юзернейм
 • Отправляйте ссылку с вашим постом друзьям 👥
 • Делитесь участием в пиар-группах 📢
 • Публикуйте информацию в своих Telegram-каналах 📱
 
-2️⃣ *Следите за активностью*
+2️⃣ Следите за активностью
 • Чем больше реакций и голосов вы получаете,
   тем выше шанс пройти в следующие раунды 💥
 
-3️⃣ *Награждение*
+3️⃣ Награждение
 • Призы получают победители финального этапа 🎁
 
-💡 *Совет:* активное продвижение юзернейма — ключ к победе.
+💡 Совет: активное продвижение юзернейма — ключ к победе.
 
-🍀 *Удачи в батле!*
+🍀 Удачи в батле!
 """
-    await callback.message.answer(text, parse_mode="Markdown", reply_markup=kb.back_button())
+    await callback.message.answer(text, reply_markup=kb.back_button())
     await callback.answer()
 
 # Помощь
 @router.callback_query(F.data == "help")
 async def help_request(callback: CallbackQuery, state: FSMContext):
     await state.set_state(HelpAnswerState.waiting_for_answer)
-    await callback.message.answer("✍️ *Опишите вашу проблему:*", parse_mode="Markdown", reply_markup=kb.back_button())
+    await callback.message.answer("✍️ Опишите вашу проблему:", reply_markup=kb.back_button())
     await callback.answer()
 
 @router.message(HelpAnswerState.waiting_for_answer)
@@ -124,8 +124,7 @@ async def receive_help_text(message: Message, state: FSMContext):
     await db.add_help_request(user_id, text)
     await state.clear()
     await message.answer("✅ Ваше обращение отправлено администратору. Ожидайте ответа.")
-    await message.answer("✨ *Меню* ✨", reply_markup=kb.main_menu(), parse_mode="Markdown")
-    # Удаляем предыдущее сообщение с просьбой, если нужно
+    await message.answer("✨ Меню ✨", reply_markup=kb.main_menu())
     await delete_previous_message(user_id, message.chat.id)
 
 # Профиль
@@ -135,18 +134,18 @@ async def show_profile(callback: CallbackQuery):
     profile = await db.get_user_profile(user_id)
     if profile:
         text = f"""
-👤 *Профиль*
+👤 Профиль
 
 👤 Имя: {profile['first_name']}
 🆔 ID: {profile['user_id']}
 📛 User: @{profile['username'] if profile['username'] else 'нет'}
 
-📈 *Статистика*
+📈 Статистика
 
 ⏰ Дата регистрации в боте: {profile['date_registration'][:10]}
 💬 Кол-во обращений: {profile['help_count']}
 """
-        await callback.message.answer(text, parse_mode="Markdown", reply_markup=kb.back_button())
+        await callback.message.answer(text, reply_markup=kb.back_button())
     else:
         await callback.answer("Профиль не найден", show_alert=True)
     await callback.answer()
@@ -156,7 +155,7 @@ async def show_profile(callback: CallbackQuery):
 async def admin_command(message: Message):
     user_id = message.from_user.id
     if user_id in config.ADMIN_IDS or await db.is_admin(user_id):
-        await send_message_and_track(user_id, message.chat.id, "🔐 *Админ панель*", reply_markup=kb.admin_panel(), parse_mode="Markdown")
+        await send_message_and_track(user_id, message.chat.id, "🔐 Админ панель", reply_markup=kb.admin_panel())
     else:
         await message.answer("⛔ У вас нет доступа к админ панели.")
 
@@ -177,7 +176,7 @@ async def admin_photos(callback: CallbackQuery):
 async def admin_users_count(callback: CallbackQuery):
     users = await db.get_all_users()
     count = len(users)
-    await callback.message.edit_text(f"👥 *Всего пользователей:* {count}", parse_mode="Markdown", reply_markup=kb.admin_panel())
+    await callback.message.edit_text(f"👥 Всего пользователей: {count}", reply_markup=kb.admin_panel())
     user_last_msg[callback.from_user.id] = callback.message.message_id
 
 @router.callback_query(F.data == "admin_help_requests")
@@ -189,8 +188,8 @@ async def admin_help_requests(callback: CallbackQuery):
     for req in requests:
         req_id, user_id, text, timestamp, username = req
         text_preview = text[:50] + "..." if len(text) > 50 else text
-        caption = f"🆘 *Обращение #{req_id}*\n👤 @{username}\n📝 {text_preview}\n🕒 {timestamp[:10]}"
-        await callback.message.answer(caption, parse_mode="Markdown", reply_markup=kb.help_request_keyboard(req_id))
+        caption = f"🆘 Обращение #{req_id}\n👤 @{username}\n📝 {text_preview}\n🕒 {timestamp[:10]}"
+        await callback.message.answer(caption, reply_markup=kb.help_request_keyboard(req_id))
     await callback.answer()
 
 @router.callback_query(F.data.startswith("answer_req_"))
@@ -198,7 +197,7 @@ async def answer_help_request(callback: CallbackQuery, state: FSMContext):
     req_id = int(callback.data.split("_")[2])
     await state.update_data(req_id=req_id)
     await state.set_state(HelpAnswerState.waiting_for_answer)
-    await callback.message.edit_text("✍️ *Введите ответ на обращение:*", parse_mode="Markdown")
+    await callback.message.edit_text("✍️ Введите ответ на обращение:")
     user_last_msg[callback.from_user.id] = callback.message.message_id
 
 @router.message(HelpAnswerState.waiting_for_answer)
@@ -213,7 +212,7 @@ async def process_help_answer(message: Message, state: FSMContext):
             cursor = await conn.execute("SELECT user_id FROM help_requests WHERE id = ?", (req_id,))
             row = await cursor.fetchone()
             user_id = row[0]
-        await bot.send_message(user_id, f"📩 *Ответ администратора:*\n{answer_text}", parse_mode="Markdown")
+        await bot.send_message(user_id, f"📩 Ответ администратора:\n{answer_text}")
         await message.answer("✅ Ответ отправлен пользователю.")
     await state.clear()
     await delete_previous_message(message.from_user.id, message.chat.id)
@@ -221,7 +220,7 @@ async def process_help_answer(message: Message, state: FSMContext):
 @router.callback_query(F.data == "admin_grant")
 async def admin_grant(callback: CallbackQuery, state: FSMContext):
     await state.set_state(GrantAdminState.waiting_for_username)
-    await callback.message.edit_text("👤 *Введите username пользователя (без @):*", parse_mode="Markdown")
+    await callback.message.edit_text("👤 Введите username пользователя (без @):")
     user_last_msg[callback.from_user.id] = callback.message.message_id
 
 @router.message(GrantAdminState.waiting_for_username)
@@ -239,7 +238,7 @@ async def grant_admin_username(message: Message, state: FSMContext):
 @router.callback_query(F.data == "admin_broadcast")
 async def admin_broadcast(callback: CallbackQuery, state: FSMContext):
     await state.set_state(BroadcastState.waiting_for_text)
-    await callback.message.edit_text("📢 *Введите текст для рассылки:*", parse_mode="Markdown")
+    await callback.message.edit_text("📢 Введите текст для рассылки:")
     user_last_msg[callback.from_user.id] = callback.message.message_id
 
 @router.message(BroadcastState.waiting_for_text)
@@ -249,7 +248,7 @@ async def send_broadcast(message: Message, state: FSMContext):
     sent = 0
     for user_id in users:
         try:
-            await bot.send_message(user_id, text, parse_mode="Markdown")
+            await bot.send_message(user_id, text)
             sent += 1
             await asyncio.sleep(0.05)
         except:
@@ -261,6 +260,6 @@ async def send_broadcast(message: Message, state: FSMContext):
 @router.callback_query(F.data == "back_to_menu")
 async def back_to_menu(callback: CallbackQuery):
     user_id = callback.from_user.id
-    await callback.message.delete()  # удаляем текущее сообщение
-    await send_message_and_track(user_id, callback.message.chat.id, "✨ *Меню* ✨", reply_markup=kb.main_menu(), parse_mode="Markdown")
+    await callback.message.delete()
+    await send_message_and_track(user_id, callback.message.chat.id, "✨ Меню ✨", reply_markup=kb.main_menu())
     await callback.answer()
