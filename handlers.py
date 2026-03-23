@@ -61,9 +61,8 @@ async def cmd_start(message: Message):
 async def check_sub_callback(callback: CallbackQuery):
     user_id = callback.from_user.id
     if await check_subscription(bot, user_id):
-        # Убираем кнопки и показываем меню в этом же сообщении
-        await callback.message.edit_text("✨ *Меню* ✨", parse_mode="Markdown", reply_markup=kb.main_menu())
-        await callback.answer("✅ Подписка подтверждена!")
+        await callback.message.edit_text("✅ Подписка подтверждена!\n\nНажмите /start, чтобы продолжить.", parse_mode="Markdown")
+        await callback.answer()
     else:
         await callback.answer("❌ Вы не подписались на канал!", show_alert=True)
 
