@@ -258,3 +258,10 @@ async def send_broadcast(message: Message, state: FSMContext):
     await message.answer(f"✅ Рассылка завершена. Отправлено {sent} сообщений.")
     await state.clear()
     await delete_previous_message(message.from_user.id, message.chat.id)
+
+@router.callback_query(F.data == "back_to_menu")
+async def back_to_menu(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    await callback.message.delete()  # удаляем текущее сообщение
+    await send_message_and_track(user_id, callback.message.chat.id, "✨ *Меню* ✨", reply_markup=kb.main_menu(), parse_mode="Markdown")
+    await callback.answer()
