@@ -35,3 +35,7 @@ def help_request_keyboard(request_id):
     builder = InlineKeyboardBuilder()
     builder.button(text="✏️ Ответить", callback_data=f"answer_req_{request_id}")
     return builder.as_markup()
+    def back_button():
+    builder = InlineKeyboardBuilder()
+    builder.button(text="◀️ Назад", callback_data="back_to_menu")
+    return builder.as_markup()
