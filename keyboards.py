@@ -3,7 +3,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 def subscribe_keyboard():
     builder = InlineKeyboardBuilder()
-    builder.button(text="📢 Подписаться на канал", url="https://t.me/dfsfdsfs432234")
+    builder.button(text="📢 Подписаться на канал", url="https://t.me/gokerbatls")
     builder.button(text="✅ Проверить подписку", callback_data="check_sub")
     builder.adjust(1)
     return builder.as_markup()
