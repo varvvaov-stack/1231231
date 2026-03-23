@@ -57,7 +57,6 @@ async def cmd_start(message: Message):
 
 # Проверка подписки
 @router.callback_query(F.data == "check_sub")
-@router.callback_query(F.data == "check_sub")
 async def check_sub_callback(callback: CallbackQuery):
     user_id = callback.from_user.id
     if await check_subscription(bot, user_id):
