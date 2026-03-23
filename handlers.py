@@ -86,7 +86,6 @@ async def receive_photo(message: Message, state: FSMContext):
 # Как выиграть
 @router.callback_query(F.data == "how_to_win")
 async def how_to_win(callback: CallbackQuery):
-    user_id = callback.from_user.id
     text = """
 🏆 *КАК ПОБЕДИТЬ В БАТЛЕ*
 
@@ -106,7 +105,8 @@ async def how_to_win(callback: CallbackQuery):
 
 🍀 *Удачи в батле!*
 """
-    await send_message_and_track(user_id, callback.message.chat.id, text, parse_mode="Markdown")
+    await callback.message.answer(text, parse_mode="Markdown", reply_markup=kb.back_button())
+    await callback.answer()
 
 # Помощь
 @router.callback_query(F.data == "help")
