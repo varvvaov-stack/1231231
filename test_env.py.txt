@@ -1,0 +1,10 @@
+import os
+from dotenv import load_dotenv
+
+print("Текущая папка:", os.getcwd())
+print("Файлы в папке:", os.listdir('.'))
+
+load_dotenv()
+print("BOT_TOKEN:", os.getenv("BOT_TOKEN"))
+print("CHANNEL_ID:", os.getenv("CHANNEL_ID"))
+print("ADMIN_IDS:", os.getenv("ADMIN_IDS"))
