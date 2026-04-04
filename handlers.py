@@ -70,7 +70,7 @@ async def check_sub_callback(callback: CallbackQuery):
 async def participate(callback: CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
     await state.set_state(PhotoState.waiting_for_photo)
-    await callback.message.edit_text("*📸 Чтобы участвовать в батле, отправьте свою фотографию:*", reply_markup=kb.back_button())
+    await callback.message.edit_text("📸 Чтобы участвовать в батле, отправьте свою фотографию:", reply_markup=kb.back_button())
     user_last_msg[user_id] = callback.message.message_id
     await callback.answer()
 
