@@ -63,7 +63,7 @@ async def check_sub_callback(callback: CallbackQuery):
         await callback.message.edit_text("✅ Подписка подтверждена!\nНажмите /start, чтобы продолжить.")
         await callback.answer()
     else:
-        await callback.answer("❌ *Вы не подписались на канал!*", show_alert=True)
+        await callback.answer("❌ Вы не подписались на канал!", show_alert=True)
 
 # Участвовать
 @router.callback_query(F.data == "participate")
@@ -81,7 +81,7 @@ async def receive_photo(message: Message, state: FSMContext):
     file_id = message.photo[-1].file_id
     await db.add_photo(user_id, file_id)
     await state.clear()
-    await message.answer("✅ *Фото сохранено! Спасибо.*")
+    await message.answer("✅ Фото сохранено! Спасибо.")
     await message.answer("*✨ Меню ✨*", reply_markup=kb.main_menu())
     await delete_previous_message(user_id, message.chat.id)
 
@@ -89,23 +89,23 @@ async def receive_photo(message: Message, state: FSMContext):
 @router.callback_query(F.data == "how_to_win")
 async def how_to_win(callback: CallbackQuery):
     text = """
-*🏆 КАК ПОБЕДИТЬ В БАТЛЕ*
+🏆 КАК ПОБЕДИТЬ В БАТЛЕ
 
-*1️⃣ Продвигайте свой юзернейм*
+1️⃣ Продвигайте свой юзернейм
 • Отправляйте ссылку с вашим постом друзьям 👥
 • Делитесь участием в пиар-группах 📢
 • Публикуйте информацию в своих Telegram-каналах 📱
 
-*2️⃣ Следите за активностью*
+2️⃣ Следите за активностью
 • Чем больше реакций и голосов вы получаете,
   тем выше шанс пройти в следующие раунды 💥
 
-*3️⃣ Награждение*
+3️⃣ Награждение
 • Призы получают победители финального этапа 🎁
 
-💡 _Совет:_ активное продвижение юзернейма — ключ к победе.
+💡 Совет: активное продвижение юзернейма — ключ к победе.
 
-🍀 _Удачи в батле!_
+🍀 Удачи в батле!
 """
     await callback.message.answer(text, reply_markup=kb.back_button())
     await callback.answer()
@@ -114,7 +114,7 @@ async def how_to_win(callback: CallbackQuery):
 @router.callback_query(F.data == "help")
 async def help_request(callback: CallbackQuery, state: FSMContext):
     await state.set_state(HelpAnswerState.waiting_for_answer)
-    await callback.message.answer("*✍️ Опишите вашу проблему:*", reply_markup=kb.back_button())
+    await callback.message.answer("✍️ Опишите вашу проблему:", reply_markup=kb.back_button())
     await callback.answer()
 
 @router.message(HelpAnswerState.waiting_for_answer)
@@ -123,7 +123,7 @@ async def receive_help_text(message: Message, state: FSMContext):
     text = message.text
     await db.add_help_request(user_id, text)
     await state.clear()
-    await message.answer("✅ *Ваше обращение отправлено администратору.* Ожидайте ответа.")
+    await message.answer("✅ Ваше обращение отправлено администратору. Ожидайте ответа.")
     await message.answer("*✨ Меню ✨*", reply_markup=kb.main_menu())
     await delete_previous_message(user_id, message.chat.id)
 
