@@ -53,7 +53,7 @@ async def cmd_start(message: Message):
     if await check_subscription(bot, user_id):
         await send_message_and_track(user_id, message.chat.id, "*✨ Меню ✨*", reply_markup=kb.main_menu())
     else:
-        await send_message_and_track(user_id, message.chat.id, "*🔒 Чтобы продолжить, подпишитесь на канал:*", reply_markup=kb.subscribe_keyboard())
+        await send_message_and_track(user_id, message.chat.id, "🔒 Чтобы продолжить, подпишитесь на канал:", reply_markup=kb.subscribe_keyboard())
 
 # Проверка подписки
 @router.callback_query(F.data == "check_sub")
