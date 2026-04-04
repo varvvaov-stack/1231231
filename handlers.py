@@ -157,7 +157,7 @@ async def admin_command(message: Message):
     if user_id in config.ADMIN_IDS or await db.is_admin(user_id):
         await send_message_and_track(user_id, message.chat.id, "*🔐 Админ панель*", reply_markup=kb.admin_panel())
     else:
-        await message.answer("⛔ *У вас нет доступа к админ панели.*")
+        await message.answer("⛔ У вас нет доступа к админ панели.")
 
 # Обработчики админки
 @router.callback_query(F.data == "admin_photos")
