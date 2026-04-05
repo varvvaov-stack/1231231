@@ -82,7 +82,7 @@ async def receive_photo(message: Message, state: FSMContext):
     await db.add_photo(user_id, file_id)
     await state.clear()
     await message.answer("✅ Фото сохранено! Спасибо.")
-    await message.answer("*✨ Меню ✨*", reply_markup=kb.main_menu())
+    await message.answer("✨ Меню ✨", reply_markup=kb.main_menu())
     await delete_previous_message(user_id, message.chat.id)
 
 # Как выиграть
